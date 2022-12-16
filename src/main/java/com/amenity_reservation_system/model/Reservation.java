@@ -1,30 +1,26 @@
 package com.amenity_reservation_system.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reservation {
+
+
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -40,6 +36,7 @@ public class Reservation {
     )
     private Long id;
 
+
     @Column(nullable = false)
     private LocalDate reservationDate;
 
@@ -53,12 +50,28 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime dateCreated;
+//    @Column(columnDefinition = "boolean default true")
+//    private Boolean isActive = true;
 
-    @LastModifiedDate
+    @CreationTimestamp
+    @Column(name = "date_created")
+    private LocalDateTime dateCreated = LocalDateTime.now();
+
+    @UpdateTimestamp
+    @Column(name = "date_last_updated")
+    private LocalDateTime dateLastUpdated = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OffsetDateTime lastUpdated;
+    private AmenityType amenityType;
+
+    public Reservation(LocalDate reservationDate, LocalTime startTime,
+                       LocalTime endTime, User user, AmenityType amenityType) {
+        this.reservationDate = reservationDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.user = user;
+        this.amenityType = amenityType;
+    }
 
 }
